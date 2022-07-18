@@ -16,15 +16,15 @@ docker pull syahidfrd/asynqmon-handler[:tag]
 docker run --rm \
     --name asynqmon-handler \
     -p 3000:3000 \
-    syahidfrd/asynqmon-handler
+    syahidfrd/asynqmon-handler --auth-password=secure123
 ```
 
 Here's the available flags:
 
 | Flag                     | Default      | Description                |
 |--------------------------|--------------|----------------------------|
-| `-auth-username`(string) | `admin`      | Basic auth username        |
-| `-auth-password`(string) | `admin`      | Basic auth password        |
-| `-redis-addr`(string)    | `:6379`      | Address of redis server    |
+| `--auth-username`(string) | `admin`      | Basic auth username        |
+| `--auth-password`(string) | `admin`      | Basic auth password        |
+| `--redis-addr`(string)    | `:6379`      | Address of redis server    |
 
-Next, go to [localhost:3000](http://localhost:3000) and see Asynqmon dashboard:
+Next, go to [localhost:3000](http://localhost:3000) and see Asynqmon dashboard
