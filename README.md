@@ -15,16 +15,18 @@ docker pull syahidfrd/asynqmon-handler[:tag]
 ```
 docker run --rm \
     --name asynqmon-handler \
+    -e ASYNQMON_USER=admin \
+    -e ASYNQMON_PASSWORD=secure123 \
     -p 3000:3000 \
-    syahidfrd/asynqmon-handler --auth-password=secure123
+    syahidfrd/asynqmon-handler
 ```
 
-Here's the available flags:
+Here's the available env:
 
-| Flag                     | Default      | Description                |
-|--------------------------|--------------|----------------------------|
-| `--auth-username`(string) | `admin`      | Basic auth username        |
-| `--auth-password`(string) | `admin`      | Basic auth password        |
-| `--redis-addr`(string)    | `:6379`      | Address of redis server    |
+| Env                 | Default | Description       |
+|---------------------|---------|-------------------|
+| `ASYNQMON_USER`     | `admin` | Asynqmon user     |
+| `ASYNQMON_PASSWORD` | `admin` | Asynqmon password |
+| `REDIS_ADDR`        | `:6379` | Redis address     |
 
 Next, go to [localhost:3000](http://localhost:3000) and see Asynqmon dashboard

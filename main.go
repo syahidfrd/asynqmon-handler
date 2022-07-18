@@ -3,9 +3,9 @@ package main
 import (
 	"crypto/sha256"
 	"crypto/subtle"
-	"flag"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/hibiken/asynq"
 	"github.com/hibiken/asynqmon"
@@ -19,24 +19,20 @@ type application struct {
 }
 
 func main() {
-	authUsername := flag.String("auth-username", "admin", "basic auth username")
-	authPassword := flag.String("auth-password", "admin", "basic auth password")
-	redisAddr := flag.String("redis-addr", ":6379", "redis address")
-
-	flag.Parse()
+	asynqmonUser := getenv("ASYNQMON_USER", "admin")
+	asynqmonPassword := getenv("ASYNQMON_PASSWORD", "admin")
+	redisAddr := getenv("REDIS_ADDR", ":6379")
 
 	app := new(application)
-	app.auth.username = *authUsername
-	app.auth.password = *authPassword
+	app.auth.username = asynqmonUser
+	app.auth.password = asynqmonPassword
 
 	h := asynqmon.New(asynqmon.Options{
 		RootPath:     "/",
-		RedisConnOpt: asynq.RedisClientOpt{Addr: *redisAddr},
+		RedisConnOpt: asynq.RedisClientOpt{Addr: redisAddr},
 	})
 
 	http.Handle(h.RootPath()+"/", app.basicAuth(h))
-
-	log.Print("Server is up on 3000 port")
 	log.Fatal(http.ListenAndServe(":3000", nil))
 }
 
@@ -61,4 +57,12 @@ func (app *application) basicAuth(next *asynqmon.HTTPHandler) http.HandlerFunc {
 		w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	})
+}
+
+func getenv(key, fallback string) string {
+	value := os.Getenv(key)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
 }
