@@ -1,24 +1,9 @@
-FROM golang:alpine
-
-# Set necessary environmet variables needed for our image
-ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
-
-# Create app directory
+FROM golang:alpine AS builder
 WORKDIR /app
-
-# Copy all other source code to work directory
 COPY . .
+RUN CGO_ENABLED=0 go build -o binary main.go
 
-# Expose port
-EXPOSE 3000
-
-# Download all the dependencies that are required
-RUN go mod tidy
-
-# Build the application
-RUN go build -o binary main.go
-
-ENTRYPOINT ["/app/binary"]
+FROM alpine:3
+RUN apk update && apk add --no-cache ca-certificates tzdata && update-ca-certificates
+COPY --from=builder /app/binary .
+ENTRYPOINT ["./binary"]
